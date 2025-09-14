@@ -8,6 +8,7 @@
    ```
 2. Locate global .gitconfig file location on your machine -
 
+   Default on macos machine is home directory ( ~ )
    Default on windows machine is home directory ( %USERPROFILE% )
       
    ![Alt text](image_gitconfigpaths.png)
@@ -19,6 +20,7 @@
 
 [alias]
 	cfg = !git config --file <path\\\\to\\\\alias4git\\\\alias.gitconfig>
+	cfg-update = "!f() { orig_dir=\"$PWD\" && cd <path\\\\to\\\\alias4git> && git pull && cd \"$orig_dir\"; }; f"
 	
 [user]
 	email = <your-email>
