@@ -1,58 +1,33 @@
 [alias]
-	st = status -s -b
-	cm = commit -m
-	co = checkout
-	br = branch --sort=-committerdate
-	ac = commit -am
-	sync = !git co develop && git pull && git co -
-	nbr = git co -b
-	
-	cln = clean -fd
-	dcln = clean -dfx
-	
-	dv = difftool -t vimdiff -y
-	map = log --pretty --oneline --graph
-	se = !git rev-list --all | xargs git grep -F
-	
-	gl = cfg -l
-	
-	npp = "!start notepad++ "
-	
-	ff = flow feature
-	ffl = flow feature list
-	ffco = flow feature checkout
-	
-	catmerge = merge --strategy-option theirs
-	
-
-	compare = rev-list --count --left-right
-	cmdlist = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
-	list = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
-	cfglist = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
-	
-	
-	ts = !ls -ll .git/FETCH_HEAD
-	synced = !ls -ll .git/FETCH_HEAD
-
-	lol = log --oneline --graph --decorate
-        rlog = reflog --date=iso
-	dif = diff --word-diff
-	lastpull = !ls -ll .git/FETCH_HEAD
-	all = add .
-	ds = diff --stat
-	untracked = !git ls-files --others
-	exuntracked = !git ls-files --others --exclude-standard
-
 	hi = "!f() { echo 'Hello, ' $1; }; f"
+
+	st = status -s -b
+	co = checkout
+	nbr = co -b
+	cm = commit -m
+	cam = commit -am
+	br = !git branch --sort=-committerdate | cat
+	sync = "!f() { git checkout \"$1\" && git pull && git checkout -; }; f"
 	
+	cln = clean -n
+	clnf = clean -f
+	clnd = clean -d
+	clnx = clean -x
+	
+	diff = difftool -t 
+	graph = log --pretty --oneline --graph --decorate
+	search = !git rev-list --all | xargs git grep -F
+	compare = rev-list --count --left-right
+	synced = !ls -ll .git/FETCH_HEAD
+	untracked = !git ls-files --others --exclude-standard
+
 	# from https://github.com/Lior-Katz
-	nccommit = commit --allow-empty-message -m \"\"
-	gcl = config --global -l
 	last = log -1 HEAD --stat
-	vimdiff = difftool -t vimdiff -y
-	diff-words = diff --color-words='[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+'
 	unstage = restore --staged
-	alias = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
+	cfglist = config --global -l
+	cfgalias = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
+	diff-vim = difftool -t vimdiff -y
+	diff-words = diff --color-words='[^[:space:]]|([[:alnum:]]|UTF_8_GUARD)+'
 	
 [color.decorate]
 	branch = 41
@@ -62,25 +37,12 @@
 	lineNumber = true
 	patternType = perl
 
-[gitflow "branch"]
-	master = main
-	develop = develop
-
-[gitflow "prefix"]
-	feature = feature-
-	bugfix = bugfix-
-	release = release-
-	hotfix = hotfix-
-	support = support-
-	versiontag = 
-
-[gitflow "path"]
-	hooks = .git/hooks
-
 [help]
 	autocorrect = 20
+
 [rerere]
 	enabled = true
+
 [push]
 	autoSetupRemote = true
 
