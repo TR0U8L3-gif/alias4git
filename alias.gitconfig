@@ -8,7 +8,6 @@
 	cam = commit -am
 	br = !git branch --sort=-committerdate | cat
 	sync = "!f() { git checkout \"$1\" && git pull && git checkout -; }; f"
-	gone = !git fetch --all --prune && git branch --format '%(refname:short) %(upstream:track)' | awk '/\\[gone\\]/{print \$1}' | xargs -r git branch -D
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
 	
 	cln = clean -n
