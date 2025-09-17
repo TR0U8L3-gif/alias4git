@@ -9,6 +9,7 @@
 	br = !git branch --sort=-committerdate | cat
 	sync = "!f() { git checkout \"$1\" && git pull && git checkout -; }; f"
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+	gone = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D
 	
 	cln = clean -n
 	clnf = clean -f
