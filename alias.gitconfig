@@ -3,7 +3,10 @@
 
 	st = status -s -b
 	co = checkout
-	nbr = co -b
+	br-new = co -b
+	brn = br-new
+	br-current = rev-parse --abbrev-ref HEAD
+	brc = br-current
 	cm = commit -m
 	cam = commit -am
 	br = "!f() { \
