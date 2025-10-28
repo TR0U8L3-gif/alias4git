@@ -5,8 +5,10 @@
 	co = checkout
 	br-new = co -b
 	brn = br-new
+	nbr = br-new
 	br-current = rev-parse --abbrev-ref HEAD
 	brc = br-current
+	cbr = br-current
 	cm = commit -m
 	cam = commit -am
 	br = "!f() { \
