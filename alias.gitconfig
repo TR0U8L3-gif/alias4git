@@ -56,13 +56,20 @@
 	brc = br-contains
 
 	br-missing-commits = "!f() { \
-			if [ -n \"$2\" ]; then \
-					src=\"$1\"; target=\"$2\"; \
-			else \
-					src=$(git rev-parse --abbrev-ref HEAD); target=\"$1\"; \
-			fi; \
+			interactive=0; p1=\"\"; p2=\"\"; \
+			for a in \"$@\"; do \
+					if [ \"$a\" = \"-i\" ]; then interactive=1; \
+					elif [ -z \"$p1\" ]; then p1=\"$a\"; \
+					else p2=\"$a\"; fi; \
+			done; \
+			if [ -n \"$p2\" ]; then src=\"$p1\"; target=\"$p2\"; \
+			else src=$(git rev-parse --abbrev-ref HEAD); target=\"${p1:-$(git rev-parse --abbrev-ref HEAD)}\"; fi; \
 			echo \"Commits in '$src' missing from '$target':\"; \
-			git log \"$target\"..\"$src\" --oneline; \
+			if [ \"$interactive\" = \"1\" ]; then \
+					git log \"$target\"..\"$src\"; \
+			else \
+					git log \"$target\"..\"$src\" --oneline | cat; \
+			fi; \
 	}; f"
 	brmc = br-missing-commits
 	
@@ -76,9 +83,9 @@
 			if [ -n \"$p2\" ]; then src=\"$p1\"; target=\"$p2\"; \
 			else src=$(git rev-parse --abbrev-ref HEAD); target=\"${p1:-$(git rev-parse --abbrev-ref HEAD)}\"; fi; \
 			if git merge-base --is-ancestor \"$src\" \"$target\"; then \
-					echo \"YES: '$src' is fully merged into '$target'\"; \
+					echo \"YES: '$target' is fully merged into '$src'\"; \
 			else \
-					echo \"NO: '$src' is missing the following commits from '$target':\"; \
+					echo \"NO: '$target' is missing the following commits from '$src':\"; \
 					if [ \"$interactive\" = \"1\" ]; then \
 							git log \"$target\"..\"$src\"; \
 					else \
