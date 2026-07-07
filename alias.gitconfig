@@ -3,14 +3,26 @@
 
 	st = status -s -b
 	co = checkout
-	br-new = co -b
-	brn = br-new
-	nbr = br-new
-	br-current = rev-parse --abbrev-ref HEAD
-	brc = br-current
-	cbr = br-current
+
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
+	graph = log --pretty --oneline --graph --decorate
+	
+	sync = "!f() { git checkout \"$1\" && git pull && git checkout -; }; f"
+	gone = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D
+	
+	diff = difftool -t 
+	
+	search = !git rev-list --all | xargs git grep -F
+	compare = rev-list --count --left-right
+	
+	synced = !ls -ll .git/FETCH_HEAD
+	untracked = !git ls-files --others --exclude-standard
+
+	# commit
 	cm = commit -m
 	cam = commit -am
+
+	# branch
 	br = "!f() { \
 			if [ \"$1\" = \"+\" ]; then \
 					git branch --sort=-committerdate | cat; \
@@ -20,21 +32,68 @@
 					git branch --sort=-committerdate; \
 			fi; \
 	}; f"
-	sync = "!f() { git checkout \"$1\" && git pull && git checkout -; }; f"
-	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --
-	gone = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D
+
+	br-new = co -b
+	brn = br-new
+	nbr = br-new
 	
+	br-current = rev-parse --abbrev-ref HEAD
+	brc = br-current
+	cbr = br-current
+	
+
+	br-contains-all = "!f() { \
+			ref=\"${1:-$(git rev-parse --abbrev-ref HEAD)}\"; \
+			git fetch --all --quiet; \
+			git branch -a --contains \"$ref\"; \
+	}; f"
+	brca = br-contains-all
+
+	br-contains = "!f() { \
+			ref=\"${1:-$(git rev-parse --abbrev-ref HEAD)}\"; \
+			git branch --contains \"$ref\"; \
+	}; f"
+	brc = br-contains
+
+	br-missing-commits = "!f() { \
+			if [ -n \"$2\" ]; then \
+					src=\"$1\"; target=\"$2\"; \
+			else \
+					src=$(git rev-parse --abbrev-ref HEAD); target=\"$1\"; \
+			fi; \
+			echo \"Commits in '$src' missing from '$target':\"; \
+			git log \"$target\"..\"$src\" --oneline; \
+	}; f"
+	brmc = br-missing-commits
+	
+	br-is-merged = "!f() { \
+			interactive=0; p1=\"\"; p2=\"\"; \
+			for a in \"$@\"; do \
+					if [ \"$a\" = \"-i\" ]; then interactive=1; \
+					elif [ -z \"$p1\" ]; then p1=\"$a\"; \
+					else p2=\"$a\"; fi; \
+			done; \
+			if [ -n \"$p2\" ]; then src=\"$p1\"; target=\"$p2\"; \
+			else src=$(git rev-parse --abbrev-ref HEAD); target=\"${p1:-$(git rev-parse --abbrev-ref HEAD)}\"; fi; \
+			if git merge-base --is-ancestor \"$src\" \"$target\"; then \
+					echo \"YES: '$src' is fully merged into '$target'\"; \
+			else \
+					echo \"NO: '$src' is missing the following commits from '$target':\"; \
+					if [ \"$interactive\" = \"1\" ]; then \
+							git log \"$target\"..\"$src\"; \
+					else \
+							git log \"$target\"..\"$src\" --oneline | cat; \
+					fi; \
+			fi; \
+	}; f"
+	brim = br-is-merged
+	ibrm = br-is-merged
+	
+	# clean
 	cln = clean -n
 	clnf = clean -f
 	clnd = clean -d
 	clnx = clean -x
-	
-	diff = difftool -t 
-	graph = log --pretty --oneline --graph --decorate
-	search = !git rev-list --all | xargs git grep -F
-	compare = rev-list --count --left-right
-	synced = !ls -ll .git/FETCH_HEAD
-	untracked = !git ls-files --others --exclude-standard
 
 	# from https://github.com/Lior-Katz
 	last = log -1 HEAD --stat
