@@ -83,7 +83,7 @@
 			if [ -n \"$p2\" ]; then src=\"$p1\"; target=\"$p2\"; \
 			else src=$(git rev-parse --abbrev-ref HEAD); target=\"${p1:-$(git rev-parse --abbrev-ref HEAD)}\"; fi; \
 			if git merge-base --is-ancestor \"$src\" \"$target\"; then \
-					echo \"YES: '$target' is fully merged into '$src'\"; \
+					echo \"YES: '$src' is fully merged into '$target'\"; \
 			else \
 					echo \"NO: '$target' is missing the following commits from '$src':\"; \
 					if [ \"$interactive\" = \"1\" ]; then \
