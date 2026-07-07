@@ -1,5 +1,7 @@
 [alias]
 	hi = "!f() { echo 'Hello, ' $1; }; f"
+	
+	alias-update = cfg-update
 
 	st = status -s -b
 	co = checkout
