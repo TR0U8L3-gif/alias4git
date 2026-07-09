@@ -98,6 +98,12 @@
 	brim = br-is-merged
 	ibrm = br-is-merged
 	
+	# tag
+	tag-push-annotated = push origin --follow-tags
+	tag-push = push origin --tags
+	tag-pull = fetch --tags
+	tag-last = describe --tags --abbrev=0
+	
 	# clean
 	cln = clean -n
 	clnf = clean -f
