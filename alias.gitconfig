@@ -10,7 +10,23 @@
 	graph = log --pretty --oneline --graph --decorate
 	
 	sync = "!f() { git checkout \"$1\" && git pull && git checkout -; }; f"
-	gone = !git fetch -p && git branch -vv | awk '/: gone]/{print $1}' | xargs git branch -D
+	gone = "!f() { \
+			git fetch -p || return 1; \
+			local gone=$(git branch -vv | awk '$1 != \"+\" && $1 != \"*\" && /: gone]/ {print $1}'); \
+			if [ -n \"$gone\" ]; then echo \"$gone\" | xargs git branch -D; fi; \
+			local wt=$(git branch -vv | awk '$1 == \"+\" && /: gone]/ {print $2}'); \
+			if [ -n \"$wt\" ]; then \
+					echo; \
+					echo 'warning: the following branches are gone on the remote but are checked out in a worktree, so they were NOT deleted:'; \
+					for b in $wt; do \
+							local p=$(git worktree list --porcelain | awk -v ref=\"refs/heads/$b\" '/^worktree / {w = substr($0, 10)} $0 == \"branch \" ref {print w}'); \
+							echo \"  - $b\"; \
+							echo \"    worktree: $p\"; \
+							echo \"    remove with: git worktree remove \\\"$p\\\"\"; \
+					done; \
+					echo 'warning: remove these worktrees manually, then run \"git gone\" again to delete the branches.'; \
+			fi; \
+	}; f"
 	
 	diff = difftool -t 
 	
@@ -103,6 +119,14 @@
 	tag-push = push origin --tags
 	tag-pull = fetch --tags
 	tag-last = describe --tags --abbrev=0
+	tag-delete = "!f() { \
+			if [ $# -eq 0 ]; then echo 'usage: git tag-delete <tag> [<tag>...]'; return 1; fi; \
+			for t in \"$@\"; do \
+					git tag -d \"$t\"; \
+					git push origin --delete \"refs/tags/$t\"; \
+			done; \
+	}; f"
+	tag-log = "!f() { git tag -l --sort=-creatordate --format='%(creatordate:short)  %(refname:short)  %(subject)' \"$@\"; }; f"
 	
 	# clean
 	cln = clean -n
